@@ -1,8 +1,8 @@
 # OkCupid Automation
 
- ⚠️ **Authorized Use Only**
-This repository is for authorized automation testing only.  
-Do not use to create accounts at scale or to bypass platform protections.
+⚠️ **Authorized Use Only**
+- This repository is for authorized automation testing only.  
+- Do not use to create accounts at scale or to bypass platform protections.
  
 A modular Python automation tool for OkCupid sign-up and login using Playwright with stealth mode. The tool automatically creates accounts, completes the sign-up process, and saves session state for easy future logins.
 
