@@ -55,7 +55,7 @@ SIGNUP_CONFIG = {
     "self_summary": "I'm handsome boy looking for pretty men",
     
     # Profile Image
-    "profile_image_path": "personface.jpg",  # Path to profile image file
+    "profile_image_path": "./personface.jpg",  # Path to profile image file
 }
 
 # ==================== SMS Verification Configuration ====================
