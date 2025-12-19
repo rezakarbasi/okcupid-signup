@@ -60,12 +60,22 @@ SIGNUP_CONFIG = {
 
 # ==================== SMS Verification Configuration ====================
 # This code uses SMSPool (https://smspool.net) for phone number verification (OTP)
-# You need to sign up for SMSPool and get an API key
-# Set SMSPOOL_API_KEY environment variable or edit smspool_auto.py directly
+# You need to sign up for SMSPool and get an API key from https://smspool.net
+# All SMSPool settings are configured here - no environment variables needed
 SMS_CONFIG = {
-    "country": "US",  # Country code for SMS service (ISO format)
+    "country": "US",  # Country code for SMS service (ISO format like "US", "NL", "GB")
     "service_id": 658,  # OkCupid service ID for SMSPool
-    "api_key": None,  # Set via environment variable SMSPOOL_API_KEY or edit smspool_auto.py
+    "api_key": "My-API-Key",  # Your SMSPool API key (get it from smspool.net dashboard)
+    "calling_code": None,  # Optional: Country calling code (e.g., "1" for US, "44" for UK). If None, auto-detected.
+    
+    # SMS waiting & resend policy
+    "poll_interval_sec": 6,  # How often to check for SMS (seconds)
+    "max_wait_sec": 20 * 60,  # Maximum time to wait for SMS (20 minutes)
+    "expire_grace_sec": 4 * 60,  # Grace period before expiration (4 minutes)
+    "auto_resend": True,  # Automatically resend SMS if not received
+    "resend_first_after": 90,  # Wait 90 seconds before first resend
+    "resend_every": 120,  # Wait 120 seconds between resends
+    "max_resends": 2,  # Maximum number of resend attempts
 }
 
 # ==================== Question Answering Configuration ====================

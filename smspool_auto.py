@@ -5,9 +5,10 @@ Two-function SMSPool helper for OkCupid:
 
 Requires: requests
   pip install requests
+
+All configuration is read from config.py - no environment variables needed.
 """
 
-import os
 import sys
 import time
 import signal
@@ -15,24 +16,31 @@ from typing import Any, Dict, Optional, List, Tuple
 
 import requests
 
-# ======================
-# CONFIG (edit as needed)
-# ======================
-COUNTRY: str | int = "NL"   # ISO like "NL"/"GB"/"US" OR numeric id like 3/2/1
-SERVICE_ID: int = 658       # OkCupid service id
-API_KEY = os.getenv("SMSPOOL_API_KEY", "My-API-Key")
+# Import configuration from config.py
+try:
+    import config
+except ImportError:
+    raise ImportError("config.py not found. Please ensure config.py exists in the same directory.")
 
-# If calling code is known, set it (digits only). If None, we try a small ISO->calling code map.
-CALLING_CODE: Optional[str] = None  # e.g., "44" for UK, "31" for NL, "1" for US/CA
+# ======================
+# CONFIG (read from config.py)
+# ======================
+SMS_CONFIG = config.SMS_CONFIG
 
-# Sensible waiting & resend policy
-POLL_INTERVAL_SEC = 6
-MAX_WAIT_SEC = 20 * 60
-EXPIRE_GRACE_SEC = 4 * 60
-AUTO_RESEND = True
-RESEND_FIRST_AFTER = 90
-RESEND_EVERY = 120
-MAX_RESENDS = 2
+# Read SMSPool configuration from config.py
+COUNTRY: str | int = SMS_CONFIG["country"]
+SERVICE_ID: int = SMS_CONFIG["service_id"]
+API_KEY = SMS_CONFIG["api_key"]
+CALLING_CODE: Optional[str] = SMS_CONFIG.get("calling_code")
+
+# SMS waiting & resend policy from config
+POLL_INTERVAL_SEC = SMS_CONFIG.get("poll_interval_sec", 6)
+MAX_WAIT_SEC = SMS_CONFIG.get("max_wait_sec", 20 * 60)
+EXPIRE_GRACE_SEC = SMS_CONFIG.get("expire_grace_sec", 4 * 60)
+AUTO_RESEND = SMS_CONFIG.get("auto_resend", True)
+RESEND_FIRST_AFTER = SMS_CONFIG.get("resend_first_after", 90)
+RESEND_EVERY = SMS_CONFIG.get("resend_every", 120)
+MAX_RESENDS = SMS_CONFIG.get("max_resends", 2)
 
 API_BASE = "https://api.smspool.net"
 UA = "okcupid-smspool-helper/3.1"
@@ -53,8 +61,8 @@ COMMON_CALLING_CODES: Dict[str, str] = {
 # ------------------ HTTP helpers ------------------
 
 def _post(path: str, data: Dict[str, Any]) -> Dict[str, Any]:
-    if not API_KEY or len(API_KEY) < 20:
-        raise RuntimeError("Missing/invalid API key. Set SMSPOOL_API_KEY or edit API_KEY in the script.")
+    if not API_KEY or len(API_KEY) < 20 or API_KEY == "My-API-Key":
+        raise RuntimeError("Missing/invalid API key. Please set 'api_key' in SMS_CONFIG in config.py with your SMSPool API key.")
     payload = {"key": API_KEY, **data}
     r = session.post(f"{API_BASE}{path}", data=payload, timeout=30)
     r.raise_for_status()

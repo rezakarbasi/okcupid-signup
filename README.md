@@ -20,7 +20,7 @@ A modular Python automation tool for OkCupid sign-up and login using Playwright 
 ## Project Structure
 
 ```
-scrapprofile/
+okcupid-signup
 ├── main.py              # Main entry point
 ├── config.py            # Configuration file (all static variables)
 ├── browser.py           # Browser setup and management
@@ -55,8 +55,10 @@ scrapprofile/
    ```
 
 4. **Configure settings:**
-   - Edit `config.py` to set your preferences (country, city, name, etc.)
-   - Set `SMSPOOL_API_KEY` environment variable or edit it in `smspool_auto.py`
+   - Edit `config.py` to set all your preferences:
+     - Sign-up information (country, city, name, etc.)
+     - SMSPool API key (get it from https://smspool.net)
+     - Proxy settings (optional)
    - Ensure your profile image exists at the path specified in `config.py`
 
 ## Configuration
@@ -87,15 +89,22 @@ SIGNUP_CONFIG = {
 You need to:
 1. Sign up for a SMSPool account at https://smspool.net
 2. Get your API key from your SMSPool dashboard
-3. Set the `SMSPOOL_API_KEY` environment variable or edit `smspool_auto.py` directly
+3. Set the `api_key` in `SMS_CONFIG` in `config.py`
 
 ```python
 SMS_CONFIG = {
     "country": "US",           # Country code for SMS service (ISO format)
     "service_id": 658,          # OkCupid service ID for SMSPool
-    "api_key": None,            # Set via SMSPOOL_API_KEY env var or edit smspool_auto.py
+    "api_key": "Your-API-Key-Here",  # Your SMSPool API key from smspool.net
+    "calling_code": None,       # Optional: Country calling code (auto-detected if None)
+    "poll_interval_sec": 6,     # How often to check for SMS
+    "max_wait_sec": 1200,       # Maximum wait time (20 minutes)
+    "auto_resend": True,        # Auto-resend if SMS not received
+    # ... more settings
 }
 ```
+
+**All SMSPool configuration is in `config.py` - no environment variables needed.**
 
 ### Browser Configuration
 
@@ -183,19 +192,16 @@ The integration works as follows:
 
 **Requirements:**
 - Active SMSPool account with sufficient balance
-- Valid SMSPool API key (set via `SMSPOOL_API_KEY` environment variable)
+- Valid SMSPool API key (set in `SMS_CONFIG["api_key"]` in `config.py`)
 - The service ID 658 must be available for your selected country
 
-## Environment Variables
+## Configuration
 
-- `SMSPOOL_API_KEY`: Your SMSPool API key (required for SMS verification)
+**All configuration is done in `config.py` - no environment variables needed.**
 
-Set it before running:
-```bash
-export SMSPOOL_API_KEY="your_api_key_here"
-```
-
-Or edit `smspool_auto.py` directly.
+Simply edit `config.py` and set:
+- `SMS_CONFIG["api_key"]`: Your SMSPool API key (required for SMS verification)
+- All other settings (proxy, sign-up info, etc.)
 
 ## Troubleshooting
 
